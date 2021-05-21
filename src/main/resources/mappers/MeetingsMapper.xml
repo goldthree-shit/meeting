@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ababa.mapper.MeetingsMapper">
+
+    <select id="getUnavailableRooms" resultType="com.ababa.entity.Meetings">
+        select * from meetings
+        <where>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+                mrid = #{mrid}
+                and
+                ((start_time &gt;= STR_TO_DATE(#{startTime} , '%Y-%m-%d %H:%i:%s')
+                and start_time &lt;= STR_TO_DATE(#{endTime} , '%Y-%m-%d %H:%i:%s'))
+                or
+                (end_time &gt;= STR_TO_DATE(#{startTime} , '%Y-%m-%d %H:%i:%s')
+                and end_time &lt;= STR_TO_DATE(#{endTime} , '%Y-%m-%d %H:%i:%s'))
+                or
+                (start_time &lt;= STR_TO_DATE(#{startTime} , '%Y-%m-%d %H:%i:%s')
+                and end_time &gt;= STR_TO_DATE(#{endTime} , '%Y-%m-%d %H:%i:%s')))
+                and deleted = 0
+            </if>
+        </where>
+    </select>
+
+    <select id="getNextMeetings" resultType="com.ababa.entity.Meetings">
+        select * from meetings
+        <where>
+            <if test="currentTime != null and currentTime != '' ">
+                username = #{username}
+                and
+                start_time &gt;= STR_TO_DATE(#{currentTime} , '%Y-%m-%d %H:%i:%s')
+                and deleted = 0
+            </if>
+        </where>
+    </select>
+
+</mapper>
